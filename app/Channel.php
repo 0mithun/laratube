@@ -2,11 +2,13 @@
 
 namespace App;
 
-use App\BaseModel;
+use App\Video;
 
+use App\BaseModel;
 use Spatie\MediaLibrary\Models\Media;
-use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+
 class Channel extends BaseModel implements HasMedia
 {
     use HasMediaTrait;
@@ -42,5 +44,9 @@ class Channel extends BaseModel implements HasMedia
 
     public function subscriptions(){
         return $this->hasMany(Subscription::class);
+    }
+
+    public function videos(){
+        return $this->hasMany(Video::class);
     }
 }

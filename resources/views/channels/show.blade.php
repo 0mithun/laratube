@@ -5,7 +5,10 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ $channel->name }}</div>
+                <div class="card-header d-flex justify-content-between">
+                    {{ $channel->name }}
+                    <a class="btn btn-primary" href="{{ route('channel.upload', $channel->id) }}">Upload Videos</a>
+                </div>
                 <div class="card-body">
                 <div class="justify-content-center">
                 <p class="text-center"><img src="{{ $channel->image() }}" alt=""></p>
@@ -62,7 +65,6 @@
                 @endif
 
             </div>
-        </div>
         </div>
     </div>
 </div>
