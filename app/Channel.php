@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\User;
 use App\BaseModel;
 
 use Spatie\MediaLibrary\Models\Media;
@@ -39,7 +38,9 @@ class Channel extends BaseModel implements HasMedia
         if($this->media->first()){
             return $this->media->first()->getFullUrl('thumb');
         }
+    }
 
-        
+    public function subscriptions(){
+        return $this->hasMany(Subscription::class);
     }
 }
