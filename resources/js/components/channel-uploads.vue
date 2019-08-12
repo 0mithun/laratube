@@ -10,14 +10,14 @@
             </p>
         </div>
         <div class="card p-3" v-else>
-            <div class="my-4" v-for="(video, index) in videos" :key="index">
+            <div class="my-4" v-for="video in videos">
                 <div class="progress mb-3">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:49%"
-                    role="progress-bar" aria-valuemin="0" area-valuemax="100" aria-valuenow="49" ></div>
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{ width: `${progress[video.name]}%` }"
+                    aria-valuemin="0" area-valuemax="100" aria-valuenow="49" ></div>
                 </div>
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="d-flex justify-content-center align-items-center" style="height:180px; color:white; font-size:18px">
+                        <div class="d-flex justify-content-center align-items-center" style="height:180px; color:white; font-size:18px; background: #808080">
                             Loading thumbnail...
                         </div>
                     </div>
@@ -44,7 +44,8 @@
         data(){
             return{
                 selected:false,
-                videos:[]
+                videos:[],
+                progress:{}
             }
         },
         methods: {
@@ -54,10 +55,17 @@
                 this.videos = Array.from(videos)
 
                 const uploaders = this.videos.map(video =>{
+                    this.progress[video.name] = 0
                     const form = new FormData()
                     form.append('video', video)
                     form.append('title', video.name)
-                    return axios.post(`/channels/${this.channel.id}/videos`, form)
+                    return axios.post(`/channels/${this.channel.id}/videos`, form, {
+                        onUploadProgress: (event)=>{
+                            console.log(event)
+                            this.progress[video.name] = Math.ceil((event.loaded / event.total) * 100)
+                            this.$forceUpdate()
+                        }
+                    })
                         .then((result) => {
                             console.log(result)
                         }).catch((err) => {
