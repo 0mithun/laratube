@@ -1697,6 +1697,16 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var timers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! timers */ "./node_modules/timers-browserify/main.js");
+/* harmony import */ var timers__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(timers__WEBPACK_IMPORTED_MODULE_0__);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 //
 //
 //
@@ -1731,6 +1741,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     channel: {
@@ -1745,7 +1760,9 @@ __webpack_require__.r(__webpack_exports__);
     return {
       selected: false,
       videos: [],
-      progress: {}
+      progress: {},
+      uploads: [],
+      intervals: {}
     };
   },
   methods: {
@@ -1767,10 +1784,34 @@ __webpack_require__.r(__webpack_exports__);
 
             _this.$forceUpdate();
           }
-        }).then(function (result) {
-          console.log(result);
+        }).then(function (_ref) {
+          var data = _ref.data;
+          _this.uploads = [].concat(_toConsumableArray(_this.uploads), [data]);
         })["catch"](function (err) {
           console.log(err);
+        });
+      });
+      axios.all(uploaders).then(function () {
+        _this.videos = _this.uploads;
+
+        _this.videos.forEach(function (video) {
+          _this.intervals[video.id] = Object(timers__WEBPACK_IMPORTED_MODULE_0__["setInterval"])(function () {
+            axios.get("/videos/".concat(video.id)).then(function (_ref2) {
+              var data = _ref2.data;
+
+              if (data.percentage == 100) {
+                Object(timers__WEBPACK_IMPORTED_MODULE_0__["clearInterval"])(_this.intervals[video.id]);
+              }
+
+              _this.videos = _this.videos.map(function (v) {
+                if (v.id == data.id) {
+                  return data;
+                }
+
+                return v;
+              });
+            });
+          }, 3000);
         });
       });
     }
@@ -38242,33 +38283,87 @@ var render = function() {
       : _c(
           "div",
           { staticClass: "card p-3" },
-          _vm._l(_vm.videos, function(video) {
-            return _c("div", { staticClass: "my-4" }, [
+          _vm._l(_vm.videos, function(video, index) {
+            return _c("div", { key: index, staticClass: "my-4" }, [
               _c("div", { staticClass: "progress mb-3" }, [
-                _c("div", {
-                  staticClass:
-                    "progress-bar progress-bar-striped progress-bar-animated",
-                  style: { width: _vm.progress[video.name] + "%" },
-                  attrs: {
-                    role: "progressbar",
-                    "aria-valuemin": "0",
-                    "area-valuemax": "100",
-                    "aria-valuenow": "49"
-                  }
-                })
+                _c(
+                  "div",
+                  {
+                    staticClass:
+                      "progress-bar progress-bar-striped progress-bar-animated",
+                    style: {
+                      width:
+                        (video.percentage || _vm.progress[video.name]) + "%"
+                    },
+                    attrs: {
+                      role: "progressbar",
+                      "aria-valuemin": "0",
+                      "area-valuemax": "100",
+                      "aria-valuenow": "49"
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(
+                          video.percentage
+                            ? video.percentage === 100
+                              ? "Video Processing Complete"
+                              : "Processing"
+                            : "Uploading"
+                        ) +
+                        "\n                "
+                    )
+                  ]
+                )
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "row" }, [
-                _vm._m(0, true),
+                _c("div", { staticClass: "col-md-4" }, [
+                  !video.thumbnail
+                    ? _c(
+                        "div",
+                        {
+                          staticClass:
+                            "d-flex justify-content-center align-items-center",
+                          staticStyle: {
+                            height: "180px",
+                            color: "white",
+                            "font-size": "18px",
+                            background: "#808080"
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                        Loading thumbnail...\n                    "
+                          )
+                        ]
+                      )
+                    : _c("img", {
+                        staticStyle: { width: "100%" },
+                        attrs: { src: video.thumbnail, alt: "" }
+                      })
+                ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "col-md-4" }, [
-                  _c("div", { staticClass: "text-center" }, [
-                    _vm._v(
-                      "\n                        " +
-                        _vm._s(video.name) +
-                        "\n                    "
-                    )
-                  ])
+                  video.percentage && video.percentage === 100
+                    ? _c(
+                        "a",
+                        {
+                          attrs: {
+                            href: "/videos/" + video.id,
+                            target: "_blank"
+                          }
+                        },
+                        [_vm._v(" " + _vm._s(video.title) + " ")]
+                      )
+                    : _c("div", { staticClass: "text-center" }, [
+                        _vm._v(
+                          "\n                        " +
+                            _vm._s(video.title || video.name) +
+                            "\n                    "
+                        )
+                      ])
                 ])
               ])
             ])
@@ -38277,32 +38372,7 @@ var render = function() {
         )
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-4" }, [
-      _c(
-        "div",
-        {
-          staticClass: "d-flex justify-content-center align-items-center",
-          staticStyle: {
-            height: "180px",
-            color: "white",
-            "font-size": "18px",
-            background: "#808080"
-          }
-        },
-        [
-          _vm._v(
-            "\n                        Loading thumbnail...\n                    "
-          )
-        ]
-      )
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -50518,6 +50588,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+Vue.config.ignoredElements = ['video-js'];
 Vue.component('subscribe-button', __webpack_require__(/*! ./components/subscribe-button.vue */ "./resources/js/components/subscribe-button.vue")["default"]);
 Vue.component('channel-uploads', __webpack_require__(/*! ./components/channel-uploads.vue */ "./resources/js/components/channel-uploads.vue")["default"]);
 var app = new Vue({
@@ -50639,7 +50710,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!************************************************************************************!*\
   !*** ./resources/js/components/channel-uploads.vue?vue&type=template&id=38c1804d& ***!
   \************************************************************************************/
-/*! exports provided: render, staticRenderFns */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

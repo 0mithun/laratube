@@ -26,6 +26,8 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+ Vue.config.ignoredElements = ['video-js']
+
 Vue.component('subscribe-button',require('./components/subscribe-button.vue').default)
 Vue.component('channel-uploads',require('./components/channel-uploads.vue').default)
 

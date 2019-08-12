@@ -46,7 +46,7 @@ class ConvertForStreaming implements ShouldQueue
                 ->open($this->video->path)
                 ->exportForHLS()
                 ->onProgress(function($percentage){
-                    $this->video->percentage = (int) $percentage;
+                    $this->video->percentage = (int) ceil($percentage) + 1;
                     $this->video->save();
 
                 })
