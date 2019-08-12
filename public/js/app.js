@@ -38233,8 +38233,8 @@ var render = function() {
       : _c(
           "div",
           { staticClass: "card p-3" },
-          _vm._l(_vm.videos, function(video) {
-            return _c("div", { staticClass: "my-4" }, [
+          _vm._l(_vm.videos, function(video, index) {
+            return _c("div", { key: index, staticClass: "my-4" }, [
               _vm._m(0, true),
               _vm._v(" "),
               _c("div", { staticClass: "row" }, [
@@ -50731,8 +50731,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /home/mithun/Documents/project/laratube/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /home/mithun/Documents/project/laratube/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/mithun/Documents/projects/laratube/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/mithun/Documents/projects/laratube/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
