@@ -1744,7 +1744,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       selected: false,
-      videos: []
+      videos: [],
+      progress: {}
     };
   },
   methods: {
@@ -1755,10 +1756,18 @@ __webpack_require__.r(__webpack_exports__);
       var videos = this.$refs.videos.files;
       this.videos = Array.from(videos);
       var uploaders = this.videos.map(function (video) {
+        _this.progress[video.name] = 0;
         var form = new FormData();
         form.append('video', video);
         form.append('title', video.name);
-        return axios.post("/channels/".concat(_this.channel.id, "/videos"), form).then(function (result) {
+        return axios.post("/channels/".concat(_this.channel.id, "/videos"), form, {
+          onUploadProgress: function onUploadProgress(event) {
+            console.log(event);
+            _this.progress[video.name] = Math.ceil(event.loaded / event.total * 100);
+
+            _this.$forceUpdate();
+          }
+        }).then(function (result) {
           console.log(result);
         })["catch"](function (err) {
           console.log(err);
@@ -38233,12 +38242,24 @@ var render = function() {
       : _c(
           "div",
           { staticClass: "card p-3" },
-          _vm._l(_vm.videos, function(video, index) {
-            return _c("div", { key: index, staticClass: "my-4" }, [
-              _vm._m(0, true),
+          _vm._l(_vm.videos, function(video) {
+            return _c("div", { staticClass: "my-4" }, [
+              _c("div", { staticClass: "progress mb-3" }, [
+                _c("div", {
+                  staticClass:
+                    "progress-bar progress-bar-striped progress-bar-animated",
+                  style: { width: _vm.progress[video.name] + "%" },
+                  attrs: {
+                    role: "progressbar",
+                    "aria-valuemin": "0",
+                    "area-valuemax": "100",
+                    "aria-valuenow": "49"
+                  }
+                })
+              ]),
               _vm._v(" "),
               _c("div", { staticClass: "row" }, [
-                _vm._m(1, true),
+                _vm._m(0, true),
                 _vm._v(" "),
                 _c("div", { staticClass: "col-md-4" }, [
                   _c("div", { staticClass: "text-center" }, [
@@ -38261,29 +38282,17 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "progress mb-3" }, [
-      _c("div", {
-        staticClass: "progress-bar progress-bar-striped progress-bar-animated",
-        staticStyle: { width: "49%" },
-        attrs: {
-          role: "progress-bar",
-          "aria-valuemin": "0",
-          "area-valuemax": "100",
-          "aria-valuenow": "49"
-        }
-      })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
     return _c("div", { staticClass: "col-md-4" }, [
       _c(
         "div",
         {
           staticClass: "d-flex justify-content-center align-items-center",
-          staticStyle: { height: "180px", color: "white", "font-size": "18px" }
+          staticStyle: {
+            height: "180px",
+            color: "white",
+            "font-size": "18px",
+            background: "#808080"
+          }
         },
         [
           _vm._v(
