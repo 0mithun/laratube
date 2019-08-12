@@ -14,14 +14,13 @@ class User extends Authenticatable
 
     public $incrementing = false;
 
-    protected static function boot(){
+    protected static function boot()
+    {
         parent::boot();
 
-        static::creating(function($model){
-            $model->{$model->getKeyName()} =(string)  Str::uuid();
+        static::creating(function ($model) {
+            $model->{$model->getKeyName()} = (string)  Str::uuid();
         });
-
-
     }
 
     /**
@@ -52,7 +51,25 @@ class User extends Authenticatable
     ];
 
 
-    public function channel(){
-    return $this->hasOne(Channel::class);
+    public function channel()
+    {
+        return $this->hasOne(Channel::class);
+    }
+
+    public function toggleVote($video, $type)
+    {
+        $vote = $video->votes->where('user_id', $this->id)->first();
+        if ($vote) {
+            $vote->update([
+                'type' => $type
+            ]);
+
+            return $vote->refresh();
+        } else {
+            return $video->votes()->create([
+                'type'      =>  $type,
+                'user_id'   => $this->id
+            ]);
+        }
     }
 }
