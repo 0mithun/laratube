@@ -96,10 +96,15 @@ export default {
       required: true,
       default: () => []
     },
-    entity: {
-      type: Object,
+    entity_id: {
+      type: String,
       required: true,
-      default: () => ({})
+      default: null
+    },
+    entity_owner: {
+      type: String,
+      required: true,
+      default: null
     }
   },
   computed: {
@@ -133,7 +138,7 @@ export default {
     vote(type) {
       if (!__auth()) {
         return alert("Please Login to vote");
-      } else if (__auth() && __auth().id === this.entity.channel.user_id) {
+      } else if (__auth() && __auth().id === this.entity_owner) {
         return alert("You can not vote your video");
       }
 
@@ -142,7 +147,7 @@ export default {
       if (type == "down" && this.downvoted) return;
 
       axios
-        .post(`/votes/${this.entity.id}/${type}`)
+        .post(`/votes/${this.entity_id}/${type}`)
         .then(({ data }) => {
           if (this.upvoted || this.downvoted) {
             this.votes = this.votes.map(v => {
@@ -152,7 +157,7 @@ export default {
               return v;
             });
           } else {
-            this.vote = [...votes, data];
+            this.votes = [...this.votes, data];
           }
         })
         .catch(err => {

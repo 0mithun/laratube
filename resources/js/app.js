@@ -38,6 +38,9 @@ Vue.component(
 
 Vue.component("votes", require("./components/votes.vue").default);
 
+Vue.component("comments", require("./components/comments.vue").default);
+// Vue.component("replies", require("./components/replies.vue").default);
+
 const app = new Vue({
     el: "#app"
 });

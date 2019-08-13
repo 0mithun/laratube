@@ -35,7 +35,7 @@
 
                                 {{ $video->views }} {{ str_plural('view', $video->views) }}
                             </div>
-                            <votes :default_votes="{{ $video->votes }}" :entity="{{ $video }}"></votes>
+                            <votes :default_votes="{{ $video->votes }}" entity_id="{{ $video->id }}" entity_owner="{{ $video->channel->user_id }}"></votes>
                         </div>
 
                         <hr>
@@ -74,6 +74,11 @@
                 </form>
                 @endif
             </div>
+
+            {{-- Comment Start --}}
+                <comments :video="{{ $video }}"></comments>
+            {{-- Comment End --}}
+
         </div>
     </div>
 </div>
@@ -101,16 +106,14 @@
         .thumbs-down {
             margin-left: 1rem;
         }
-    </style>
-
-    <style>
         .w-full {
             width: 100% !important;
         }
         .w-80 {
             width: 80% !important;
         }
-    </style>
+
+
     </style>
 @endsection
 

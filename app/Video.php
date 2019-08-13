@@ -25,4 +25,9 @@ class Video extends BaseModel
     {
         return $this->morphMany(Vote::class, 'votable');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->whereNull('comment_id');
+    }
 }

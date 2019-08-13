@@ -56,9 +56,15 @@ class User extends Authenticatable
         return $this->hasOne(Channel::class);
     }
 
-    public function toggleVote($video, $type)
+    public function comments()
     {
-        $vote = $video->votes->where('user_id', $this->id)->first();
+        return $this->hasMany(Comment::class);
+    }
+
+
+    public function toggleVote($entity, $type)
+    {
+        $vote = $entity->votes->where('user_id', $this->id)->first();
         if ($vote) {
             $vote->update([
                 'type' => $type
@@ -66,7 +72,7 @@ class User extends Authenticatable
 
             return $vote->refresh();
         } else {
-            return $video->votes()->create([
+            return $entity->votes()->create([
                 'type'      =>  $type,
                 'user_id'   => $this->id
             ]);

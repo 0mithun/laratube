@@ -26,6 +26,9 @@ Route::resource('channels', 'ChannelController');
 Route::get('/videos/{video}', 'VideoController@show')->name('video.show');
 Route::put('/videos/{video}', 'VideoController@updateView')->name('video.watch');
 
+Route::get('/videos/{video}/comments', 'CommentController@index');
+Route::get('/comments/{comment}/replies', 'CommentController@replies');
+
 
 Route::group(['middleware' => ['auth']], function () {
     Route::resource('channels/{channel}/subscriptions', 'SubscriptionController')->only(['store', 'destroy']);
@@ -34,5 +37,5 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::put('/video{video}', 'VideoController@update')->name('video.update');
 
-    Route::post('/votes/{video}/{type}', 'VoteController@vote')->name('video.vote');
+    Route::post('/votes/{entityId}/{type}', 'VoteController@vote');
 });
