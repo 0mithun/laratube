@@ -16,4 +16,14 @@ class CommentController extends Controller
     {
         return $comment->replies()->paginate(10);
     }
+
+
+    public function store(Request $request, Video $video)
+    {
+        return auth()->user()->comments()->create([
+            'body'          =>  $request->body,
+            'video_id'      =>  $request->video_id,
+            'comment_id'    =>  $request->comment_id
+        ])->fresh();
+    }
 }

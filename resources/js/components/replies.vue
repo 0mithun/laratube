@@ -1,9 +1,5 @@
 <template>
   <div>
-    <div class="form-inline my-4 w-full">
-      <input type="text" name id class="form-control w-80" />
-      <button class="btn btn-info btn-sm">Add Replies</button>
-    </div>
     <div class="media mt-3" v-for="(reply,index) in replies.data" :key="index">
       <a href class="mr-3">
         <!-- <img
@@ -49,9 +45,6 @@ export default {
   components: {
     Avatar
   },
-  //   mounted() {
-  //     this.fetchReplies();
-  //   },
   methods: {
     fetchReplies() {
       const url = this.replies.next_page_url
@@ -68,6 +61,12 @@ export default {
         .catch(err => {
           console.log(err);
         });
+    },
+    newReply(reply) {
+      this.replies = {
+        ...this.replies,
+        data: [reply, ...this.replies.data]
+      };
     }
   }
 };

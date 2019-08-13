@@ -38,4 +38,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/video{video}', 'VideoController@update')->name('video.update');
 
     Route::post('/votes/{entityId}/{type}', 'VoteController@vote');
+
+    Route::post('/comments/{video}', 'CommentController@store');
 });

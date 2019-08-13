@@ -1,26 +1,10 @@
 <template>
   <div class="card mt-5 p-5">
-    <div class="form-inline my-4 w-full">
-      <!-- <textarea name="comment" id rows="10" class="form-control w-80"></textarea> -->
-      <input type="text" name id class="form-control w-80" />
-      <button class="btn btn-primary btn-sm">Add Comment</button>
+    <div class="form-inline my-4 w-full" v-if="auth">
+      <input v-model="newComment" type="text" name id class="form-control w-80" />
+      <button class="btn btn-primary btn-sm" @click="addComment">Add Comment</button>
     </div>
-    <div class="media my-3" v-for="(comment, index) in comments.data" :key="index">
-      <!-- <img src="https://picsum.photos/id/42/200/200" class="rounded-circle mr-3" width="30" height="30" /> -->
-      <Avatar :username="comment.user.name" :size="30" class="mr-3"></Avatar>
-      <div class="media-body">
-        <h6 class="mt-2">{{ comment.user.name }}</h6>
-        <small>{{ comment.body }}</small>
-
-        <replies :comment="comment" v-if="comment.replies_count > 0"></replies>
-
-        <votes
-          :default_votes="comment.votes"
-          :entity_id="comment.id"
-          :entity_owner="comment.user.id"
-        ></votes>
-      </div>
-    </div>
+    <comment v-for="comment in comments.data" :key="comment.id" :comment="comment"></comment>
     <div class="text-center">
       <button class="btn btn-success" @click="fetchComment" v-if="comments.next_page_url">Load More</button>
       <h3 v-else class="text-info">No More Comments</h3>
@@ -29,9 +13,7 @@
 </template>
 
 <script>
-import Avatar from "vue-avatar";
-
-import Replies from "./replies";
+import Comment from "./comment";
 
 export default {
   props: {
@@ -42,18 +24,23 @@ export default {
     }
   },
   components: {
-    Avatar,
-    Replies
+    Comment
   },
   data() {
     return {
       comments: {
         data: []
-      }
+      },
+      newComment: ""
     };
   },
   mounted() {
     this.fetchComment();
+  },
+  computed: {
+    auth() {
+      return __auth();
+    }
   },
   methods: {
     fetchComment() {
@@ -66,6 +53,24 @@ export default {
           this.comments = {
             ...data,
             data: [...this.comments.data, ...data.data]
+          };
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    addComment() {
+      if (!this.newComment) return;
+      axios
+        .post(`/comments/${this.video.id}`, {
+          video_id: this.video.id,
+          body: this.newComment
+        })
+        .then(({ data }) => {
+          this.newComment = "";
+          this.comments = {
+            ...this.comments,
+            data: [data, ...this.comments.data]
           };
         })
         .catch(err => {
